@@ -6,14 +6,17 @@
 int main(int argc, char** argv) {
     long long i, num_intervals;
     double rect_width, area, sum, x_middle;
-    int myrank, nprocs;
+    double totalsum;
+    int rank, ntasks;
+    double start_time,end_time;
 
     sscanf(argv[1],"%llu",&num_intervals);
     rect_width = PI / num_intervals;
     
     MPI_Init(&argc, &argv);
-    MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
-    MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
+    MPI_Comm_size(MPI_COMM_WORLD, &ntasks);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    start_time = MPI_Wtime();
     sum = 0;
     for(i = 1; i < num_intervals + 1; i++) {
     	/* find the middle of the interval on the X-axis. */
@@ -21,9 +24,11 @@ int main(int argc, char** argv) {
     	area = sin(x_middle) * rect_width;
         sum = sum + area;
     }
-    printf("The total area is: %f\n", (float)sum);
-
-    printf("Hello from processor %d of %d\n", myrank, nprocs);
+    MPI_Reduce(&sum,&totalsum,1,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
+    if(rank==0)
+    {
+	printf("The total area is: %f\n", (float)totalsum);
+    }
 
     MPI_Finalize();
     return 0;

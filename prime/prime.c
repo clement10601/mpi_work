@@ -27,10 +27,7 @@ int main(int argc, char** argv) {
 
     long long int n, limit;
     int rc,tag=1;
-    char inmsg, outmsg='x';
     double start_time,end_time;
-
-    MPI_Status Stat;
 
     sscanf(argv[1],"%llu",&limit);
     //printf("Starting. Numbers to be scanned= %lld\n",limit);
